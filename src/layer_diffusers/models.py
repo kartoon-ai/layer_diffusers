@@ -277,6 +277,11 @@ class TransparentVAEDecoder:
         pixel_device = pixel.device
         pixel_dtype = pixel.dtype
 
+        assert pixel.shape[-2] % 64 == 0, (f"Dim -2 is not multiple of 64 | {pixel.shape} |\noptions: {pixel.shape[-2]}"
+                                           f" -> {64 * (pixel.shape[-2] // 64)} / {64 * (1 + (pixel.shape[-2] // 64))}")
+        assert pixel.shape[-1] % 64 == 0, (f"Dim -1 is not multiple of 64 | {pixel.shape} |\noptions: {pixel.shape[-1]}"
+                                           f" -> {64 * (pixel.shape[-1] // 64)} / {64 * (1 + (pixel.shape[-1] // 64))}")
+
         pixel = pixel.to(device=self.load_device, dtype=self.dtype)
         latent = latent.to(device=self.load_device, dtype=self.dtype)
         # y.shape = [B, C=4, H, W]
