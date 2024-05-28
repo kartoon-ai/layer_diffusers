@@ -1,0 +1,9 @@
+accelerate
+diffusers
+ipython
+opencv-python
+torch
+torchvision
+torchaudio
+transformers
+triton
