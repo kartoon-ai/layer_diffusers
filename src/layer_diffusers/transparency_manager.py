@@ -8,7 +8,7 @@ from .models import TransparentVAEDecoder
 
 
 class TransparencyManager:
-    def __init__(self, pipe, lora_weight, device=get_torch_device()):
+    def __init__(self, pipe, lora_weight=1., device=get_torch_device()):
         self.pipe = pipe
         self.lora_weight = lora_weight
         self.device = device

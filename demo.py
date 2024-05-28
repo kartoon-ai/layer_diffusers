@@ -11,30 +11,6 @@ from layer_diffusers.utils import get_torch_device, load_file_from_url, load_tor
 from layer_diffusers.transparency_manager import TransparencyManager
 
 
-def create_image_grid(images, cols=None, rows=1):
-    if not isinstance(images, list) or len(images) == 0:
-        return None
-
-    if cols is None:
-        cols = len(images)
-    if len(images) != cols * rows:
-        raise ValueError("Number of images does not match grid size")
-
-    image_width, image_height = images[0].size
-
-    grid_width = cols * image_width
-    grid_height = rows * image_height
-    grid_image = Image.new('RGB', (grid_width, grid_height))
-
-    # Paste each image into the grid
-    for i, image in enumerate(images):
-        row = i // cols
-        col = i % cols
-        grid_image.paste(image, (col * image_width, row * image_height))
-
-    return grid_image
-
-
 print(f"using diffusers version {diffusers.__version__}")
 
 device = get_torch_device()
@@ -51,7 +27,6 @@ prompts = [
     "an octopus with many tentacles",
 ]
 prompt_append = ", best quality"
-lora_weight = 1.
 
 pipe = StableDiffusionXLPipeline.from_pretrained(model_name, torch_dtype=torch.float16, variant="fp16", use_safetensors=True,).to(device)
 
@@ -64,7 +39,8 @@ try:
 except ImportError:
     print("xformers is not installed, skipping some optimization")
 
-transparency_manager = TransparencyManager(pipe, lora_weight)
+# instantiate the transparency manager
+transparency_manager = TransparencyManager(pipe)
 transparency_manager.patch_pipe()
 
 alpha_output_images = []
@@ -78,6 +54,7 @@ for prompt in prompts:
     images = pipe(prompt=prompt, negative_prompt="bad, ugly", num_inference_steps=20,
                   width=1024, height=1024, generator=gen).images
 
+    # this should be run right after the forward pass of the pipe, as it operates on the latest latent
     pixels, pixels_rgb, alpha, checkerboard_image = transparency_manager.post_process_transparency()
 
     simple_pixel_output_images.append(Image.fromarray(tensor_to_numpy_img(pixels)))
