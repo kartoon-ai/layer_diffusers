@@ -1,7 +1,7 @@
 # Diffuser-layerdiffuse
 ![output_images](./example_4_outputs.jpg)
 
-_4 example of output images with model `"Juggernaut-XL-v9"`_ 
+_4 example of output images with model `"Juggernaut-XL-v6"`_ 
 
 - Unofficial implementation of layerdiffuse with diffusers: https://github.com/layerdiffusion/LayerDiffuse
 - Paper: https://arxiv.org/abs/2402.17113
